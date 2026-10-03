@@ -1,0 +1,23 @@
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: aws-s3-store
+spec:
+  retentionPolicy: "7d"
+  configuration:
+    destinationPath: s3://pg-ha-lab-backups-2791a9b4/
+    s3Credentials:
+      accessKeyId:
+        name: aws-s3-creds
+        key: ACCESS_KEY_ID
+      secretAccessKey:
+        name: aws-s3-creds
+        key: ACCESS_SECRET_KEY
+    wal:
+      compression: gzip
+  instanceSidecarConfiguration:
+    env:
+    - name: AWS_REGION
+      value: eu-north-1
+    - name: AWS_DEFAULT_REGION
+      value: eu-north-1
