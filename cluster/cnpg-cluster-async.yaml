@@ -13,3 +13,8 @@ spec:
     labelSelector:
       matchLabels:
         cnpg.io/cluster: pg-cluster
+  plugins:
+  - name: barman-cloud.cloudnative-pg.io
+    isWALArchiver: true
+    parameters:
+      barmanObjectName: aws-s3-store
