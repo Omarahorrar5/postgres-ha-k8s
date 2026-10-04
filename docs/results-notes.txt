@@ -1,1 +1,6 @@
 PITR restore (1 instance, tiny DB, from S3 eu-north-1): 105 s, 1000/1000 rows recovered
+Run 1 (async, force kill primary): failed=26 lost=0 gap=19.73s p99=11.7ms
+Failover, async, forced kill of primary, n=5:
+gap: 19.73 / 20.72 / 39.48 (outlier, VM slow) / 19.87 / 19.87 s
+failed: 26 / 27 / 46 / 26 / 26 ; lost: 0 in all runs
+median gap 19.87 s

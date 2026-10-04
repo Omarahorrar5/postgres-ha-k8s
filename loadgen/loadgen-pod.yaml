@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: loadgen
+spec:
+  restartPolicy: Never
+  containers:
+  - name: loadgen
+    image: python:3.12-slim
+    command: ["sh", "-c", "pip install -q 'psycopg[binary]' && python /app/lg.py run && sleep infinity"]
+    env:
+    - {name: PGHOST, value: pg-cluster-rw}
+    - {name: DURATION, value: "90"}
+    - name: PGUSER
+      valueFrom: {secretKeyRef: {name: pg-cluster-app, key: username}}
+    - name: PGPASSWORD
+      valueFrom: {secretKeyRef: {name: pg-cluster-app, key: password}}
+    volumeMounts:
+    - {name: script, mountPath: /app}
+  volumes:
+  - name: script
+    configMap: {name: loadgen-script}
