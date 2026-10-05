@@ -6,7 +6,7 @@ The goal is not just to deploy PostgreSQL on Kubernetes, but to **break it on pu
 
 ## Architecture
 
-![PostgreSQL HA Architecture](docs/architecture.png)
+![PostgreSQL HA Architecture](docs/architecture.jpg)
 
 * **3 PostgreSQL instances** (1 primary + 2 replicas) managed by CloudNativePG
 * Streaming replication (**asynchronous**) with automatic failover
