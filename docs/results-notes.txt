@@ -1,6 +1,337 @@
-PITR restore (1 instance, tiny DB, from S3 eu-north-1): 105 s, 1000/1000 rows recovered
-Run 1 (async, force kill primary): failed=26 lost=0 gap=19.73s p99=11.7ms
-Failover, async, forced kill of primary, n=5:
-gap: 19.73 / 20.72 / 39.48 (outlier, VM slow) / 19.87 / 19.87 s
-failed: 26 / 27 / 46 / 26 / 26 ; lost: 0 in all runs
-median gap 19.87 s
+========================================
+Experiment: graceful-1
+Action: primary-graceful
+Target: pg-cluster-2
+Kill time UTC: 13:49:51
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-1
+CNPG recovery time: 82s
+
+--- timeline (changes only) ---
+13:49:26 pg-cluster-2 | Cluster in healthy state
+13:49:51 pg-cluster-2 | Failing over
+13:51:02 pg-cluster-1 | Waiting for the instances to become active
+
+--- writer verification ---
+attempts            : 4163
+acknowledged        : 4163
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.7 / 8.2
+
+========================================
+Experiment: graceful-2
+Action: primary-graceful
+Target: pg-cluster-1
+Kill time UTC: 13:55:49
+Primary before: pg-cluster-1
+Primary after:  pg-cluster-2
+CNPG recovery time: 81s
+
+--- timeline (changes only) ---
+13:55:24 pg-cluster-1 | Cluster in healthy state
+13:55:49 pg-cluster-1 | Failing over
+13:56:59 pg-cluster-2 | Waiting for the instances to become active
+
+--- writer verification ---
+attempts            : 4147
+acknowledged        : 4147
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.6 / 11.4
+
+========================================
+Experiment: graceful-3
+Action: primary-graceful
+Target: pg-cluster-2
+Kill time UTC: 13:57:54
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-1
+CNPG recovery time: 81s
+
+--- timeline (changes only) ---
+13:57:29 pg-cluster-2 | Cluster in healthy state
+13:57:55 pg-cluster-2 | Failing over
+13:59:04 pg-cluster-1 | Waiting for the instances to become active
+
+--- writer verification ---
+attempts            : 4152
+acknowledged        : 4152
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.7 / 4.2
+
+========================================
+Experiment: graceful-4
+Action: primary-graceful
+Target: pg-cluster-1
+Kill time UTC: 13:59:53
+Primary before: pg-cluster-1
+Primary after:  pg-cluster-2
+CNPG recovery time: 82s
+
+--- timeline (changes only) ---
+13:59:28 pg-cluster-1 | Cluster in healthy state
+13:59:54 pg-cluster-1 | Failing over
+14:01:04 pg-cluster-2 | Waiting for the instances to become active
+
+--- writer verification ---
+attempts            : 4166
+acknowledged        : 4166
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.07   <- downtime
+latency ms p50/p99  : 0.8 / 3.6
+
+========================================
+Experiment: graceful-5
+Action: primary-graceful
+Target: pg-cluster-2
+Kill time UTC: 14:01:56
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-1
+CNPG recovery time: 81s
+
+--- timeline (changes only) ---
+14:01:31 pg-cluster-2 | Cluster in healthy state
+14:01:57 pg-cluster-2 | Failing over
+14:03:06 pg-cluster-1 | Waiting for the instances to become active
+
+--- writer verification ---
+attempts            : 4167
+acknowledged        : 4167
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.8 / 3.3
+
+========================================
+Experiment: force-1
+Action: primary-force
+Target: pg-cluster-1
+Kill time UTC: 14:07:45
+Primary before: pg-cluster-1
+Primary after:  pg-cluster-2
+CNPG recovery time: 65s
+
+--- timeline (changes only) ---
+14:07:20 pg-cluster-1 | Cluster in healthy state
+14:07:45 pg-cluster-1 | Failing over
+14:08:07 pg-cluster-2 | Failing over
+14:08:08 pg-cluster-2 | Waiting for the instances to become active
+14:08:18 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 3194
+acknowledged        : 3168
+failed requests     : 26
+LOST (acked, absent): 0  []
+max write gap (s)   : 19.87   <- downtime
+latency ms p50/p99  : 0.7 / 8.2
+
+========================================
+Experiment: force-2
+Action: primary-force
+Target: pg-cluster-2
+Kill time UTC: 14:09:41
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-1
+CNPG recovery time: 68s
+
+--- timeline (changes only) ---
+14:09:16 pg-cluster-2 | Cluster in healthy state
+14:09:42 pg-cluster-2 | Failing over
+14:10:03 pg-cluster-1 | Waiting for the instances to become active
+14:10:15 pg-cluster-1 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 3184
+acknowledged        : 3158
+failed requests     : 26
+LOST (acked, absent): 0  []
+max write gap (s)   : 20.03   <- downtime
+latency ms p50/p99  : 0.7 / 10.4
+
+========================================
+Experiment: force-3
+Action: primary-force
+Target: pg-cluster-1
+Kill time UTC: 14:11:35
+Primary before: pg-cluster-1
+Primary after:  pg-cluster-2
+CNPG recovery time: 64s
+
+--- timeline (changes only) ---
+14:11:09 pg-cluster-1 | Cluster in healthy state
+14:11:35 pg-cluster-1 | Failing over
+14:11:57 pg-cluster-2 | Waiting for the instances to become active
+14:12:07 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 3214
+acknowledged        : 3188
+failed requests     : 26
+LOST (acked, absent): 0  []
+max write gap (s)   : 19.78   <- downtime
+latency ms p50/p99  : 0.7 / 7.5
+
+========================================
+Experiment: force-4
+Action: primary-force
+Target: pg-cluster-2
+Kill time UTC: 14:13:18
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-1
+CNPG recovery time: 65s
+
+--- timeline (changes only) ---
+14:12:53 pg-cluster-2 | Cluster in healthy state
+14:13:18 pg-cluster-2 | Failing over
+14:13:41 pg-cluster-1 | Waiting for the instances to become active
+14:13:51 pg-cluster-1 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 3161
+acknowledged        : 3134
+failed requests     : 27
+LOST (acked, absent): 0  []
+max write gap (s)   : 20.87   <- downtime
+latency ms p50/p99  : 0.8 / 6.5
+
+========================================
+Experiment: force-5
+Action: primary-force
+Target: pg-cluster-1
+Kill time UTC: 14:15:11
+Primary before: pg-cluster-1
+Primary after:  pg-cluster-2
+CNPG recovery time: 68s
+
+--- timeline (changes only) ---
+14:14:46 pg-cluster-1 | Cluster in healthy state
+14:15:12 pg-cluster-1 | Failing over
+14:15:33 pg-cluster-2 | Failing over
+14:15:34 pg-cluster-2 | Waiting for the instances to become active
+14:15:44 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 3216
+acknowledged        : 3190
+failed requests     : 26
+LOST (acked, absent): 0  []
+max write gap (s)   : 19.88   <- downtime
+latency ms p50/p99  : 0.8 / 5.2
+
+========================================
+Experiment: replica-1
+Action: replica
+Target: pg-cluster-1
+Kill time UTC: 14:19:18
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-2
+CNPG recovery time: 66s
+
+--- timeline (changes only) ---
+14:18:53 pg-cluster-2 | Cluster in healthy state
+14:19:19 pg-cluster-2 | Waiting for the instances to become active
+14:19:31 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 4122
+acknowledged        : 4122
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.8 / 8.6
+
+========================================
+Experiment: replica-2
+Action: replica
+Target: pg-cluster-1
+Kill time UTC: 14:21:22
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-2
+CNPG recovery time: 67s
+
+--- timeline (changes only) ---
+14:20:56 pg-cluster-2 | Cluster in healthy state
+14:21:22 pg-cluster-2 | Waiting for the instances to become active
+14:21:36 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 4107
+acknowledged        : 4107
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.06   <- downtime
+latency ms p50/p99  : 0.8 / 10.7
+
+========================================
+Experiment: replica-3
+Action: replica
+Target: pg-cluster-1
+Kill time UTC: 14:23:15
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-2
+CNPG recovery time: 66s
+
+--- timeline (changes only) ---
+14:22:50 pg-cluster-2 | Cluster in healthy state
+14:23:16 pg-cluster-2 | Waiting for the instances to become active
+14:23:28 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 4141
+acknowledged        : 4141
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.06   <- downtime
+latency ms p50/p99  : 0.8 / 4.8
+
+========================================
+Experiment: replica-4
+Action: replica
+Target: pg-cluster-1
+Kill time UTC: 14:25:19
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-2
+CNPG recovery time: 66s
+
+--- timeline (changes only) ---
+14:24:54 pg-cluster-2 | Cluster in healthy state
+14:25:20 pg-cluster-2 | Waiting for the instances to become active
+14:25:32 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 4139
+acknowledged        : 4139
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.07   <- downtime
+latency ms p50/p99  : 0.8 / 5.4
+
+========================================
+Experiment: replica-5
+Action: replica
+Target: pg-cluster-1
+Kill time UTC: 14:27:02
+Primary before: pg-cluster-2
+Primary after:  pg-cluster-2
+CNPG recovery time: 65s
+
+--- timeline (changes only) ---
+14:26:37 pg-cluster-2 | Cluster in healthy state
+14:27:03 pg-cluster-2 | Waiting for the instances to become active
+14:27:15 pg-cluster-2 | Cluster in healthy state
+
+--- writer verification ---
+attempts            : 4149
+acknowledged        : 4149
+failed requests     : 0
+LOST (acked, absent): 0  []
+max write gap (s)   : 0.05   <- downtime
+latency ms p50/p99  : 0.8 / 6.1
+
