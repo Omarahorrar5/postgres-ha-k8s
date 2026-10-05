@@ -1,0 +1,97 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: postgres-ha-alerts
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  groups:
+    - name: postgres-ha
+      rules:
+
+        # 1. PostgreSQL exporter/collector is not responding
+        - alert: PostgreSQLCollectorDown
+          expr: cnpg_collector_up == 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "PostgreSQL metrics collector is down"
+            description: "CloudNativePG metrics collector is not responding on {{ $labels.pod }}."
+
+        # 2. PostgreSQL replica is not streaming
+        - alert: PostgreSQLReplicaNotStreaming
+          expr: |
+            cnpg_pg_replication_is_wal_receiver_up == 0
+            and
+            cnpg_pg_replication_in_recovery == 1
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "PostgreSQL replica is not streaming"
+            description: "A PostgreSQL replica is in recovery but its WAL receiver is not running."
+
+        # 3. High replication lag
+        - alert: PostgreSQLReplicationLagHigh
+          expr: cnpg_pg_replication_lag > 10
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL replication lag is high"
+            description: "Replication lag is above 10 seconds on {{ $labels.pod }}."
+
+        # 4. High number of waiting connections
+        - alert: PostgreSQLConnectionsWaiting
+          expr: cnpg_backends_waiting_total > 10
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL has many waiting connections"
+            description: "More than 10 PostgreSQL backends are waiting."
+
+        # 5. WAL archive failure
+        - alert: PostgreSQLWALArchiveFailures
+          expr: increase(cnpg_pg_stat_archiver_failed_count[10m]) > 0
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "PostgreSQL WAL archiving is failing"
+            description: "PostgreSQL reported WAL archive failures during the last 10 minutes."
+
+        # 6. No WAL archive activity for too long
+        - alert: PostgreSQLWALArchiveStalled
+          expr: cnpg_pg_stat_archiver_seconds_since_last_archival > 600
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL WAL archiving may be stalled"
+            description: "No WAL archive activity has been observed for more than 10 minutes."
+
+        # 7. Collector errors
+        - alert: PostgreSQLCollectorErrors
+          expr: increase(cnpg_collector_collection_errors_total[10m]) > 0
+          for: 2m
+          labels:
+            severity: warning
+          annotations:
+            summary: "CloudNativePG collector errors detected"
+            description: "The CloudNativePG metrics collector reported collection errors."
+
+        # 8. Database transaction rollback rate
+        - alert: PostgreSQLRollbackRateHigh
+          expr: |
+            rate(cnpg_pg_stat_database_xact_rollback{datname="app"}[5m])
+            >
+            5
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PostgreSQL rollback rate is high"
+            description: "The app database is experiencing more than 5 rollbacks per second."
